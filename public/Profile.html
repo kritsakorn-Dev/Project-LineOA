@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+    />
+    <title>ข้อมูลของท่าน</title>
+    <!-- <link rel="shortcut icon" type="image/jpg" href="./image/icon.png" /> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
+    <style>
+      body {
+        background-color: rgb(148, 6, 214);
+      }
+      div {
+        font-family: 'Kanit', sans-serif;
+        font-weight: bold;
+      }
+
+      [v-cloak] > * {
+        display: none;
+      }
+
+      [v-cloak]::before {
+        content: " ";
+        display: block;
+        align-items: center;
+        margin-left: 50%;
+        width: 1px;
+        height: 16px;
+        background-image: url("data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==");
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app" v-cloak>
+      <v-app>
+        <v-main>
+          <v-container class="flex-center"><br><br>
+            <div><h2>ข้อมูลของฉัน</h2></div><br><br>
+            <div v-if="show">
+              <v-simple-table>
+                <template v-slot:default>
+                  <thead>
+                    <tr>
+                      <th>ชื่อข้อมูล</th>
+                      <th><center>รายละเอียดข้อมูล</center></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>ภาพ</td>
+                      <td><center>
+                        <v-img
+                          style="
+                            border-radius: 100px;
+                            margin-top: 5px;
+                            margin-bottom: 5px;
+                          "
+                          v-if="profile.pictureUrl != null"
+                          max-width="150"
+                          :src="profile.pictureUrl"
+                        ></center></v-img>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>ชื่อ</td>
+                      <td><center>{{ profile.displayName}}</center></td>
+                    </tr>
+                    <tr>
+                      <td>อีเมล</td>
+                      <td><center>{{ profile.email}}</center></td>
+                    </tr>
+                    <tr>
+                      <td>Send Message</td>
+                      <td><center>
+                        <v-btn
+                          color="success"
+                          @click="sendMessage('Pro')"
+                        >
+                          Send Message
+                        </center>
+                        </v-btn>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Share</td>
+                      <td>
+                      <center><v-btn color="primary" @click="share()"> Share </v-btn></center>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Scan</td>
+                      <td><center>
+                        <v-btn color="secondary" @click="scan()"> Scan QR </v-btn>
+
+                        <br />
+                        <div v-if="qrResult != ''">QR Code: {{ qrResult }}</div>
+                      </center>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Show QR</td>
+                      <td><center>
+                        <v-btn
+                          v-if="qr == ''"
+                          color="secondary"
+                          @click="showQR()"
+                        >
+                          Show QR
+                        </v-btn>
+                        <v-btn v-else color="secondary" @click="qr=''">
+                          Hide QR
+                        </v-btn>
+
+                        <br />
+                        <div v-if="qr != ''"><br>
+                          <v-img max-width="150" :src="qr"></v-img>
+                        </div>
+                      </center>
+                      </td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+            </div>
+            <div v-else>
+              <v-container class="flex-center">
+                <v-btn elevation="5" fab loading></v-btn>
+                <div>Loading...</div>
+              </v-container>
+            </div>
+
+            <v-snackbar v-model="snackbar">
+              {{ actionMessage }}
+              <template v-slot:action="{ attrs }">
+                <v-btn color="pink" v-bind="attrs" @click="snackbar = false">
+                  Close
+                </v-btn>
+              </template>
+            </v-snackbar>
+          </v-container>
+        </v-main>
+        <v-main v-else>
+          <v-container class="flex-center">
+            <v-btn elevation="5" fab loading></v-btn>
+            <div>Loading...</div>
+          </v-container>
+        </v-main>
+      </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2/dist/vuetify.js"></script>
+    <script
+      charset="utf-8"
+      src="https://static.line-scdn.net/liff/edge/2/sdk.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+    <!-- <script src="https://unpkg.com/vconsole/dist/vconsole.min.js"></script> -->
+
+    <script type="module">
+      // const storage = getStorage(firebase);
+
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-app.js";
+      import {
+        getFirestore,
+        doc,
+        getDoc,
+        updateDoc,
+        collection,
+        query,
+        where,
+        getDocs,
+        setDoc,
+        Timestamp,
+        GeoPoint,
+        onSnapshot,
+        getCountFromServer,
+      } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-firestore.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyCGbK4yB60CiI9HMHckmuIQAzwxk7IZcgg",
+        authDomain: "lineoaclasstue.firebaseapp.com",
+        projectId: "lineoaclasstue",
+        storageBucket: "lineoaclasstue.appspot.com",
+        messagingSenderId: "933668921601",
+        appId: "1:933668921601:web:b655db47541baa04a57b00",
+        measurementId: "G-SL79B42KXN",
+      };
+
+      // Initialize Firebase
+      const firebaseApp = initializeApp(firebaseConfig);
+      // Initialize Cloud Firestore and get a reference to the service
+      const db = getFirestore(firebaseApp);
+
+      var app = new Vue({
+        el: "#app",
+        vuetify: new Vuetify(),
+        data: {
+          firstTime: false,
+          personalData: {},
+          profile: {},
+          myProfile: {},
+          userProfile: {},
+
+          qrResult: "",
+          qr: "",
+          show: false,
+
+          valid: true,
+
+          consent: false,
+          liffProfile: {},
+          signIn: false,
+
+          snackbar: false,
+          actionMessage: "",
+
+          liffProfileId: "2000158192-lLV9eGZQ",
+          liffProfileURL: "https://liff.line.me/2000158192-lLV9eGZQ",
+        },
+
+        created() {},
+
+        methods: {
+          async initLiff() {
+            await liff
+              .init({
+                liffId: this.liffProfileId,
+              })
+              .then(() => {
+                if (!liff.isLoggedIn()) {
+                  liff.login();
+                  console.log("login");
+                } else {
+                  // liff.logout();
+                  console.log("already login");
+                }
+              })
+              .catch((err) => {
+                console.log(err.code, err.message);
+              });
+          },
+
+          async getProfileFromDB() {
+            const q = query(
+              collection(db, "users"),
+              where("userId", "==", this.profile.userId)
+            );
+            const unsubscribe = onSnapshot(q, (querySnapshot) => {
+              this.myProfile = {};
+
+              if (querySnapshot.empty) {
+                this.firstTime = true;
+              } else {
+                this.firstTime = false;
+                querySnapshot.forEach((doc) => {
+                  this.myProfile = doc.data();
+                });
+                this.profile = this.myProfile;
+                console.log(this.myProfile);
+              }
+            });
+          },
+
+          async showProfile() {
+            try {
+              this.profile = await liff.getProfile();
+              const email = liff.getDecodedIDToken().email;
+              this.profile.email = email;
+              console.log(this.profile);
+            } catch (error) {
+              liff.openWindow({
+                url: this.liffProfileURL,
+                external: false,
+              });
+              this.snackbar = true;
+              this.actionMessage = error;
+              console.error("error", error);
+            }
+          },
+
+          async register() {
+            // Add a new document in collection "cities"
+
+            let newObj = this.profile;
+            newObj.point = 0;
+
+            await setDoc(doc(db, "users", this.profile.userId), newObj);
+          },
+
+          async showQR() {
+            this.qr =
+              "https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=" +
+              this.profile.userId +
+              "&choe=UTF-8";
+
+            console.log(this.qr);
+          },
+
+          async scan() {
+            let userProfile = {};
+            liff
+              .scanCodeV2()
+              .then(async (result) => {
+                const ref = doc(db, "users", result.value);
+                const docSnap = await getDoc(ref);
+                if (docSnap.exists()) {
+                  console.log(this.userProfile);
+                  this.userProfile = docSnap.data();
+                  this.userProfile.point = this.userProfile.point + 10;
+                  updateDoc(ref, this.userProfile);
+                  console.log(this.userProfile);
+                } else {
+                  console.log("No such document!");
+                }
+
+                // result = { value: "" }
+              })
+              .catch((error) => {
+                console.log("error", error);
+              });
+          },
+
+          async sendMessage(message) {
+            liff
+              .sendMessages([
+                {
+                  type: "text",
+                  text: message,
+                },
+              ])
+              .then(() => {
+                console.log("message sent");
+                liff.closeWindow();
+              })
+              .catch((err) => {
+                console.log("error", err);
+              });
+          },
+          share() {
+            liff
+              .shareTargetPicker(
+                [
+                  
+                {
+  "type": "flex",
+  "altText": "Flex Message",
+  "contents": {
+    "type": "bubble",
+    "hero": {
+      "type": "image",
+      "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_3_movie.png",
+      "size": "full",
+      "aspectRatio": "20:13",
+      "aspectMode": "cover",
+      "action": {
+        "type": "uri",
+        "uri": "http://linecorp.com/"
+      }
+    },
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "spacing": "md",
+      "contents": [
+        {
+          "type": "text",
+          "text": "BROWN'S ADVENTURE\nIN MOVIE",
+          "wrap": true,
+          "weight": "bold",
+          "gravity": "center",
+          "size": "xl"
+        },
+        {
+          "type": "box",
+          "layout": "vertical",
+          "margin": "lg",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "baseline",
+              "spacing": "sm",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "ชื่อ",
+                  "color": "#aaaaaa",
+                  "size": "sm",
+                  "flex": 1
+                },
+                {
+                  "type": "text",
+                  "text": "Monday 25, 9:00PM",
+                  "wrap": true,
+                  "size": "sm",
+                  "color": "#666666",
+                  "flex": 4
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "spacing": "sm",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "อีเมล์",
+                  "color": "#aaaaaa",
+                  "size": "sm",
+                  "flex": 1
+                },
+                {
+                  "type": "text",
+                  "text": "7 Floor, No.3",
+                  "wrap": true,
+                  "color": "#666666",
+                  "size": "sm",
+                  "flex": 4
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+},
+
+
+                ],
+                
+                {
+                  isMultiple: true,
+                }
+              )
+              .then(function (res) {
+                if (res) {
+                  // succeeded in sending a message through TargetPicker
+                  console.log(`[${res.status}] Message sent!`);
+                } else {
+                  // sending message canceled
+                  console.log("TargetPicker was closed!");
+                }
+              })
+              .catch(function (error) {
+                // something went wrong before sending a message
+                console.log("something wrong happen" + error);
+              });
+          },
+        },
+        watch: {},
+
+        async mounted() {
+          await this.initLiff();
+          await this.showProfile();
+          await this.getProfileFromDB();
+
+          this.show = true;
+        },
+      });
+      module.exports = { 
+  text, 
+
+};
+    </script>
+
+    <style scoped>
+      .flex-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+    </style>
+  </body>
+  <script>
+    // window.onload = function () {
+    //   initVConsole();
+    // };
+    // // Initialize vConsole
+    // function initVConsole() {
+    //   window.vConsole = new window.VConsole({
+    //     defaultPlugins: ["system", "network", "element", "storage"],
+    //     maxLogNumber: 1000,
+    //     onReady: function () {
+    //       console.log("vConsole is ready.");
+    //     },
+    //     onClearLog: function () {
+    //       console.log("on clearLog");
+    //     },
+    //   });
+    // }
+  </script>
+</html>
